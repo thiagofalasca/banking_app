@@ -15,9 +15,9 @@ import { useRouter } from "next/navigation";
 const PluggyConnect = dynamic(
   () =>
     (import("react-pluggy-connect") as any).then(
-      (mod: { PluggyConnect: any }) => mod.PluggyConnect,
+      (mod: { PluggyConnect: any }) => mod.PluggyConnect
     ),
-  { ssr: false },
+  { ssr: false }
 ) as typeof PluggyConnectType;
 
 const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
@@ -36,10 +36,13 @@ const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
   }, [generateToken]);
 
   const onSuccess = useCallback(async (itemData: { item: Item }) => {
-    await createBank({
+    const newBank = await createBank({
       user,
       item: itemData.item,
     });
+    if (!newBank) {
+      console.log("Error while creating bank connection");
+    }
     router.push("/");
   }, []);
 

@@ -5,8 +5,8 @@ import { getLoggedInUser } from "@/lib/actions/user.actions";
 
 const MyBanks = async () => {
   const loggedIn = await getLoggedInUser();
+  if (!loggedIn) return <p>No logged in user found. Please contact support.</p>;
   const accounts = await getAccounts({ userId: loggedIn.$id });
-
   if (!accounts) return <p>No accounts found. Please contact support.</p>;
 
   return (
@@ -22,7 +22,7 @@ const MyBanks = async () => {
             {accounts &&
               accounts.data.map((a: Account) => (
                 <BankCard
-                  key={accounts.id}
+                  key={a.id}
                   account={a}
                   userName={loggedIn?.firstName}
                 />

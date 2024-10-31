@@ -1,5 +1,16 @@
 /* eslint-disable no-unused-vars */
 
+declare type AccountsResult = {
+  data: Bank[] & Account[];
+  totalBanks: number;
+  totalCurrentBalance: number;
+};
+
+declare type AccountResult = {
+  data: Account;
+  transactions: Trasaction[];
+};
+
 declare type SearchParamProps = {
   params: { [key: string]: string };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -202,10 +213,6 @@ declare interface getAccountProps {
 declare interface getInstitutionProps {
   institutionId: string;
 }
-
-// declare interface getTransactionsProps {
-//   accessToken: string;
-// }
 
 declare interface getTransactionsProps {
   accountId: string;

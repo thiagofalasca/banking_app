@@ -7,14 +7,15 @@ import { getLoggedInUser } from "@/lib/actions/user.actions";
 
 const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
   const loggedIn = await getLoggedInUser();
+  if (!loggedIn) return <p>No logged in user found. Please contact support.</p>;
   const accounts = await getAccounts({ userId: loggedIn.$id });
-
   if (!accounts) return <p>No accounts found. Please contact support.</p>;
 
-  const currentPage = Number(page as string) || 1;
   const accountsData = accounts?.data;
   const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;
   const account = await getAccount({ appwriteItemId });
+  if (!account) return <p>Account not found. Please contact support.</p>;
+  const currentPage = Number(page as string) || 1;
 
   return (
     <section className="home">
@@ -44,7 +45,7 @@ const Home = async ({ searchParams: { id, page } }: SearchParamProps) => {
       <RightSidebar
         user={loggedIn}
         transactions={account?.transactions}
-        banks={accountsData?.slice(0, 2)}
+        banks={accountsData}
       />
     </section>
   );

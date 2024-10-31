@@ -39,22 +39,22 @@ export const formatDateTime = (dateString: Date) => {
 
   const formattedDateTime: string = new Date(dateString).toLocaleString(
     "en-US",
-    dateTimeOptions,
+    dateTimeOptions
   );
 
   const formattedDateDay: string = new Date(dateString).toLocaleString(
     "en-US",
-    dateDayOptions,
+    dateDayOptions
   );
 
   const formattedDate: string = new Date(dateString).toLocaleString(
     "en-US",
-    dateOptions,
+    dateOptions
   );
 
   const formattedTime: string = new Date(dateString).toLocaleString(
     "en-US",
-    timeOptions,
+    timeOptions
   );
 
   return {
@@ -97,12 +97,12 @@ export function formUrlQuery({ params, key, value }: UrlQueryParams) {
       url: window.location.pathname,
       query: currentUrl,
     },
-    { skipNull: true },
+    { skipNull: true }
   );
 }
 
 export function countTransactionCategories(
-  transactions: Transaction[],
+  transactions: Transaction[]
 ): CategoryCount[] {
   const categoryCounts: { [category: string]: number } = {};
   let totalCount = 0;
@@ -125,7 +125,7 @@ export function countTransactionCategories(
       name: category,
       count: categoryCounts[category],
       totalCount,
-    }),
+    })
   );
 
   aggregatedCategories.sort((a, b) => b.count - a.count);
@@ -155,7 +155,6 @@ export const getTransactionStatus = (date: Date) => {
 
 export const authFormSchema = (type: string) =>
   z.object({
-    // sign up
     firstName:
       type === "sign-in"
         ? z.string().optional()
@@ -177,42 +176,54 @@ export const authFormSchema = (type: string) =>
         ? z.string().optional()
         : z
             .string()
-            .min(5, "Address must be at least 5 characters")
+            .min(1, "Address is required")
             .max(50, "Address must be at most 50 characters"),
     city:
       type === "sign-in"
         ? z.string().optional()
-        : z.string().max(50, "City must be at most 50 characters"),
+        : z
+            .string()
+            .min(1, "City is required")
+            .max(50, "City must be at most 50 characters"),
     state:
       type === "sign-in"
         ? z.string().optional()
         : z
             .string()
-            .length(2, "State must be exactly 2 characters")
-            .regex(/^[A-Za-z]+$/, "State can only contain letters"),
+            .length(2, "State must be 2 characters")
+            .regex(/^[A-Za-z]+$/, "State can only contain letters")
+            .toUpperCase(),
     postalCode:
       type === "sign-in"
         ? z.string().optional()
-        : z
-            .string()
-            .length(8, "Postal code must br exactly 8 characters")
-            .regex(/^\d+$/, "Postal code can only contain numbers"),
+        : z.string().regex(/^\d{5}-\d{3}$/, "Invalid postal code format"),
     dateOfBirth:
       type === "sign-in"
         ? z.string().optional()
         : z
             .string()
             .regex(
-              /^\d{2}-\d{2}-\d{4}$/,
-              "Date of birth must be in the format DD-MM-YYYY",
+              /^\d{2}\/\d{2}\/\d{4}$/,
+              "Date of birth must be in the format DD/MM/YYYY"
             ),
-    // both
-    email: z.string().email("Invalid email format"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/\d/, "Password must contain at least one number")
-      .regex(/[\W_]/, "Password must contain at least one special character"),
+    email: z.string().email("Invalid email format").toLowerCase(),
+    password:
+      type === "sign-in"
+        ? z.string().min(1, "Password is required")
+        : z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .regex(
+              /[A-Z]/,
+              "Password must contain at least one uppercase letter"
+            )
+            .regex(
+              /[a-z]/,
+              "Password must contain at least one lowercase letter"
+            )
+            .regex(/\d/, "Password must contain at least one number")
+            .regex(
+              /[\W_]/,
+              "Password must contain at least one special character"
+            ),
   });

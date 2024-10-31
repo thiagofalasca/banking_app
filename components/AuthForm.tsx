@@ -17,11 +17,9 @@ import PluggyLink from "./PluggyLink";
 
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
   const formSchema = authFormSchema(type);
-
   const defaultValues =
     type === "sign-in"
       ? {
@@ -39,44 +37,64 @@ const AuthForm = ({ type }: { type: string }) => {
           email: "",
           password: "",
         };
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
 
+  const handleInput = (name: string, value: string) => {
+    if (name === "firstName" || name === "lastName" || name === "city") {
+      form.setValue(
+        name,
+        value.replace(/\b\w/g, (char: string) => char.toUpperCase())
+      );
+    }
+    if (name === "state") {
+      form.setValue(name, value.toUpperCase());
+    }
+    if (name === "postalCode") {
+      form.setValue(name, value.replace(/(\d{5})(\d{3})/, "$1-$2"));
+    }
+    if (name === "dateOfBirth") {
+      form.setValue(
+        name,
+        value
+          .replace(/^(\d{2})(\d)/, "$1/$2")
+          .replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3")
+      );
+    }
+    if (name === "email") {
+      form.setValue(name, value.toLowerCase());
+    }
+  };
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    try {
-      if (type === "sign-up") {
-        const userData = {
-          firstName: data.firstName!,
-          lastName: data.lastName!,
-          address1: data.address1!,
-          city: data.city!,
-          state: data.state!,
-          postalCode: data.postalCode!,
-          dateOfBirth: data.dateOfBirth!,
-          email: data.email,
-          password: data.password,
-        };
-        const newUser = await signUp(userData);
-        setUser(newUser);
-      }
-
-      if (type === "sign-in") {
-        const response = await signIn({
-          email: data.email,
-          password: data.password,
-        });
-
-        if (response) router.push("/");
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+    if (type === "sign-up") {
+      const userData = {
+        firstName: data.firstName!,
+        lastName: data.lastName!,
+        address1: data.address1!,
+        city: data.city!,
+        state: data.state!,
+        postalCode: data.postalCode!,
+        dateOfBirth: data.dateOfBirth!,
+        email: data.email,
+        password: data.password,
+      };
+      const newUser = await signUp(userData);
+      if (!newUser) console.log("Faled to sign up");
+      else setUser(newUser);
     }
+    if (type === "sign-in") {
+      const user = await signIn({
+        email: data.email,
+        password: data.password,
+      });
+      if (!user) console.log("Faled to sign in");
+      else router.push("/");
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -120,12 +138,14 @@ const AuthForm = ({ type }: { type: string }) => {
                       name="firstName"
                       label="First Name"
                       placeholder="Enter your first name"
+                      handleInput={handleInput}
                     />
                     <CustomInput
                       control={form.control}
                       name="lastName"
                       label="Last Name"
                       placeholder="Enter your first name"
+                      handleInput={handleInput}
                     />
                   </div>
                   <CustomInput
@@ -133,12 +153,14 @@ const AuthForm = ({ type }: { type: string }) => {
                     name="address1"
                     label="Address"
                     placeholder="Enter your address"
+                    handleInput={handleInput}
                   />
                   <CustomInput
                     control={form.control}
                     name="city"
                     label="City"
                     placeholder="Enter your city"
+                    handleInput={handleInput}
                   />
                   <div className="flex gap-4">
                     <CustomInput
@@ -146,12 +168,14 @@ const AuthForm = ({ type }: { type: string }) => {
                       name="state"
                       label="State"
                       placeholder="Entrer your state"
+                      handleInput={handleInput}
                     />
                     <CustomInput
                       control={form.control}
                       name="postalCode"
                       label="Postal Code"
                       placeholder="Enter your postal code"
+                      handleInput={handleInput}
                     />
                   </div>
                   <CustomInput
@@ -159,6 +183,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     name="dateOfBirth"
                     label="Date of Birth"
                     placeholder="DD-MM-YYYY"
+                    handleInput={handleInput}
                   />
                 </>
               )}
@@ -167,12 +192,14 @@ const AuthForm = ({ type }: { type: string }) => {
                 name="email"
                 label="Email"
                 placeholder="Enter your email"
+                handleInput={handleInput}
               />
               <CustomInput
                 control={form.control}
                 name="password"
                 label="Password"
                 placeholder="Enter your password"
+                handleInput={handleInput}
               />
               <div className="flex flex-col gap-4">
                 <Button type="submit" disabled={isLoading} className="form-btn">

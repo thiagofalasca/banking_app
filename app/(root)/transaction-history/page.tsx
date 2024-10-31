@@ -9,13 +9,15 @@ const TransactionHistory = async ({
   searchParams: { id, page },
 }: SearchParamProps) => {
   const loggedIn = await getLoggedInUser();
+  if (!loggedIn) return <p>No logged in user found. Please contact support.</p>;
   const accounts = await getAccounts({ userId: loggedIn.$id });
-
   if (!accounts) return <p>No accounts found. Please contact support.</p>;
 
   const accountsData = accounts?.data;
   const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;
   const account = await getAccount({ appwriteItemId });
+  if (!account) return <p>Account not found. Please contact support.</p>;
+  
   const currentPage = Number(page as string) || 1;
   const rowsPerPage = 10;
   const totalPages = Math.ceil(account?.transactions.length / rowsPerPage);
@@ -23,7 +25,7 @@ const TransactionHistory = async ({
   const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
   const currentTransactions = account?.transactions.slice(
     indexOfFirstTransaction,
-    indexOfLastTransaction,
+    indexOfLastTransaction
   );
 
   return (

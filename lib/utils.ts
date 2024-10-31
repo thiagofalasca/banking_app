@@ -39,22 +39,22 @@ export const formatDateTime = (dateString: Date) => {
 
   const formattedDateTime: string = new Date(dateString).toLocaleString(
     "en-US",
-    dateTimeOptions
+    dateTimeOptions,
   );
 
   const formattedDateDay: string = new Date(dateString).toLocaleString(
     "en-US",
-    dateDayOptions
+    dateDayOptions,
   );
 
   const formattedDate: string = new Date(dateString).toLocaleString(
     "en-US",
-    dateOptions
+    dateOptions,
   );
 
   const formattedTime: string = new Date(dateString).toLocaleString(
     "en-US",
-    timeOptions
+    timeOptions,
   );
 
   return {
@@ -97,12 +97,12 @@ export function formUrlQuery({ params, key, value }: UrlQueryParams) {
       url: window.location.pathname,
       query: currentUrl,
     },
-    { skipNull: true }
+    { skipNull: true },
   );
 }
 
 export function countTransactionCategories(
-  transactions: Transaction[]
+  transactions: Transaction[],
 ): CategoryCount[] {
   const categoryCounts: { [category: string]: number } = {};
   let totalCount = 0;
@@ -125,7 +125,7 @@ export function countTransactionCategories(
       name: category,
       count: categoryCounts[category],
       totalCount,
-    })
+    }),
   );
 
   aggregatedCategories.sort((a, b) => b.count - a.count);
@@ -204,7 +204,7 @@ export const authFormSchema = (type: string) =>
             .string()
             .regex(
               /^\d{2}\/\d{2}\/\d{4}$/,
-              "Date of birth must be in the format DD/MM/YYYY"
+              "Date of birth must be in the format DD/MM/YYYY",
             ),
     email: z.string().email("Invalid email format").toLowerCase(),
     password:
@@ -215,15 +215,15 @@ export const authFormSchema = (type: string) =>
             .min(8, "Password must be at least 8 characters")
             .regex(
               /[A-Z]/,
-              "Password must contain at least one uppercase letter"
+              "Password must contain at least one uppercase letter",
             )
             .regex(
               /[a-z]/,
-              "Password must contain at least one lowercase letter"
+              "Password must contain at least one lowercase letter",
             )
             .regex(/\d/, "Password must contain at least one number")
             .regex(
               /[\W_]/,
-              "Password must contain at least one special character"
+              "Password must contain at least one special character",
             ),
   });

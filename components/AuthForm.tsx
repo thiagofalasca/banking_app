@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -12,14 +12,25 @@ import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signIn, signUp } from "@/lib/actions/user.actions";
+import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
 import PluggyLink from "./PluggyLink";
 
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const formSchema = authFormSchema(type);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const loggedIn = await getLoggedInUser();
+      if (loggedIn) {
+        setUser(loggedIn);
+      }
+    };
+    loadUser();
+  }, []);
+
   const defaultValues =
     type === "sign-in"
       ? {
@@ -46,7 +57,7 @@ const AuthForm = ({ type }: { type: string }) => {
     if (name === "firstName" || name === "lastName" || name === "city") {
       form.setValue(
         name,
-        value.replace(/\b\w/g, (char: string) => char.toUpperCase())
+        value.replace(/\b\w/g, (char: string) => char.toUpperCase()),
       );
     }
     if (name === "state") {
@@ -60,7 +71,7 @@ const AuthForm = ({ type }: { type: string }) => {
         name,
         value
           .replace(/^(\d{2})(\d)/, "$1/$2")
-          .replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3")
+          .replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3"),
       );
     }
     if (name === "email") {

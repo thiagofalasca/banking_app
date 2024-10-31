@@ -17,7 +17,7 @@ const TransactionHistory = async ({
   const appwriteItemId = (id as string) || accountsData[0]?.appwriteItemId;
   const account = await getAccount({ appwriteItemId });
   if (!account) return <p>Account not found. Please contact support.</p>;
-  
+
   const currentPage = Number(page as string) || 1;
   const rowsPerPage = 10;
   const totalPages = Math.ceil(account?.transactions.length / rowsPerPage);
@@ -25,7 +25,7 @@ const TransactionHistory = async ({
   const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
   const currentTransactions = account?.transactions.slice(
     indexOfFirstTransaction,
-    indexOfLastTransaction
+    indexOfLastTransaction,
   );
 
   return (

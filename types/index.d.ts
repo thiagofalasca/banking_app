@@ -11,6 +11,10 @@ declare type AccountResult = {
   transactions: Trasaction[];
 };
 
+declare type Result<T> =
+  | { success: true; data: T }
+  | { success: false; error: unknown };
+
 declare type SearchParamProps = {
   params: { [key: string]: string };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -201,7 +205,6 @@ declare interface DoughnutChartProps {
   accounts: Account[];
 }
 
-// Actions
 declare interface getAccountsProps {
   userId: string;
 }
@@ -247,12 +250,6 @@ declare interface signInProps {
 declare interface getUserInfoProps {
   userId: string;
 }
-
-// declare interface exchangePublicTokenProps {
-//   //publicToken: string;
-//   user: User;
-//   item: Item;
-// }
 
 declare interface createBankProps {
   user: User;

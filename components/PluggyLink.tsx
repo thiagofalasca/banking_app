@@ -7,7 +7,7 @@ import type {
   PluggyConnect as PluggyConnectType,
 } from "react-pluggy-connect";
 import type { Item } from "pluggy-sdk";
-import { createToken, createBank } from "@/lib/actions/user.actions";
+import { createToken, createBankAccount } from "@/lib/actions/user.actions";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,9 +15,9 @@ import { useRouter } from "next/navigation";
 const PluggyConnect = dynamic(
   () =>
     (import("react-pluggy-connect") as any).then(
-      (mod: { PluggyConnect: any }) => mod.PluggyConnect
+      (mod: { PluggyConnect: any }) => mod.PluggyConnect,
     ),
-  { ssr: false }
+  { ssr: false },
 ) as typeof PluggyConnectType;
 
 const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
@@ -28,6 +28,10 @@ const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
 
   const generateToken = useCallback(async (itemId?: string) => {
     const accessToken = await createToken(itemId);
+    if (!accessToken) {
+      console.error("Error while generating token");
+      return;
+    }
     setConnectToken(accessToken);
   }, []);
 
@@ -36,12 +40,10 @@ const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
   }, [generateToken]);
 
   const onSuccess = useCallback(async (itemData: { item: Item }) => {
-    const newBank = await createBank({
-      user,
-      item: itemData.item,
-    });
-    if (!newBank) {
-      console.log("Error while creating bank connection");
+    const bank = await createBankAccount({ user, item: itemData.item });
+    if (!bank) {
+      console.error("Erro while creating bank");
+      return;
     }
     router.push("/");
   }, []);

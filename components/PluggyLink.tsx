@@ -11,13 +11,14 @@ import { createToken, createBankAccount } from "@/lib/actions/user.actions";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 
 const PluggyConnect = dynamic(
   () =>
     (import("react-pluggy-connect") as any).then(
-      (mod: { PluggyConnect: any }) => mod.PluggyConnect,
+      (mod: { PluggyConnect: any }) => mod.PluggyConnect
     ),
-  { ssr: false },
+  { ssr: false }
 ) as typeof PluggyConnectType;
 
 const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
@@ -82,17 +83,30 @@ const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
           >
             Connect bank
           </Button>
-          {connecting && connectToken && (
-            <PluggyConnect
-              updateItem={item?.id}
-              connectToken={connectToken!}
-              includeSandbox={true}
-              onSuccess={onSuccess}
-              onError={onError}
-              onClose={handleClose}
-              onEvent={handleEvent}
-            />
-          )}
+          {connecting && connectToken &&
+            createPortal(
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 9999,
+                }}
+              >
+                <PluggyConnect
+                  updateItem={item?.id}
+                  connectToken={connectToken!}
+                  includeSandbox={true}
+                  onSuccess={onSuccess}
+                  onError={onError}
+                  onClose={handleClose}
+                  onEvent={handleEvent}
+                />
+              </div>,
+              document.body
+            )}
         </>
       ) : (
         <>
@@ -108,17 +122,30 @@ const PluggyLink = ({ user, variant }: PluggyLinkProps) => {
             />
             <p className="sidebar-label">Connect bank</p>
           </Button>
-          {connecting && connectToken && (
-            <PluggyConnect
-              updateItem={item?.id}
-              connectToken={connectToken!}
-              includeSandbox={true}
-              onSuccess={onSuccess}
-              onError={onError}
-              onClose={handleClose}
-              onEvent={handleEvent}
-            />
-          )}
+          {connecting && connectToken &&
+            createPortal(
+              <div
+                style={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 9999,
+                }}
+              >
+                <PluggyConnect
+                  updateItem={item?.id}
+                  connectToken={connectToken!}
+                  includeSandbox={true}
+                  onSuccess={onSuccess}
+                  onError={onError}
+                  onClose={handleClose}
+                  onEvent={handleEvent}
+                />
+              </div>,
+              document.body
+            )}
         </>
       )}
     </>
